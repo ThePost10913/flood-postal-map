@@ -2,6 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>แผนที่พื้นที่ประสบอุทกภัยที่นำจ่ายไปรษณีย์ไม่ได้ – 7 ต.ค. 2569</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +30,7 @@ body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"IBM
 header{padding:12px 18px 10px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;align-items:flex-end;justify-content:space-between}
 h1{margin:0;font-size:1.25rem;font-weight:700;letter-spacing:-.01em;line-height:1.3}
 .sub{color:var(--muted);font-size:.85rem}
+.src{color:var(--focus);text-underline-offset:2px}
 .stats{display:flex;gap:18px;flex-wrap:wrap}
 .stat b{font-size:1.35rem;font-weight:700;display:block;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat span{font-size:.78rem;color:var(--muted)}
@@ -113,6 +115,7 @@ section.detail{border-left:1px solid var(--line);padding:0}
   <div>
     <h1>พื้นที่ประสบอุทกภัยที่ไปรษณีย์นำจ่ายไม่ได้</h1>
     <div class="sub">ข้อมูล ณ วันที่ 7 ตุลาคม พ.ศ. 2569 เวลา 10.00 น. · เรียงตามรหัสไปรษณีย์ · คลิกอำเภอ/เขตบนแผนที่เพื่อดูรายละเอียด</div>
+    <div class="sub">ที่มาข้อมูล: <a class="src" href="https://www.facebook.com/thailandpost.co.th/posts/pfbid0GEbTCNqeLDXfKwJDbDovmh1Xxyp59xiGMBpRotpsTkP861s54fFouaTa6pCqRcQzl" target="_blank" rel="noopener noreferrer">บริษัท ไปรษณีย์ไทย จำกัด (ประกาศทาง Facebook 7 ต.ค. 2569)</a></div>
   </div>
   <div class="stats" id="stats"></div>
 </header>
@@ -259,7 +262,7 @@ function renderEmpty(){
   จุดสีบนแผนที่คืออำเภอ/เขตที่มีที่ทำการแจ้งว่านำจ่ายไม่ได้ ซูมเข้าเพื่อเห็นรูปร่างและชื่ออำเภอ ลากเพื่อเลื่อนแผนที่ หรือเลือกจากรายการด้านซ้าย</div>
   <div class="closedbox"><b>ที่ทำการ/จุดให้บริการที่ปิดทำการ (${DATA.closed.length})</b></div>
   <ul class="clist">${cl}</ul>
-  <div class="foot">แหล่งข้อมูล: เอกสาร “รายชื่อที่ทำการที่มีพื้นที่ประสบอุทกภัยและไม่สามารถนำจ่ายได้” ณ 7 ต.ค. 2569 เวลา 10.00 น. ตำแหน่งอำเภอจับคู่จากชื่อที่ทำการ/คอลัมน์อำเภอ-เขต และรหัสไปรษณีย์ ส่วนสีเป็นการประเมินจากข้อความในเอกสาร</div>`;
+  <div class="foot">แหล่งข้อมูล: เอกสาร “รายชื่อที่ทำการที่มีพื้นที่ประสบอุทกภัยและไม่สามารถนำจ่ายได้” ที่ <a class="src" href="https://www.facebook.com/thailandpost.co.th/posts/pfbid0GEbTCNqeLDXfKwJDbDovmh1Xxyp59xiGMBpRotpsTkP861s54fFouaTa6pCqRcQzl" target="_blank" rel="noopener noreferrer">บริษัท ไปรษณีย์ไทย จำกัด เผยแพร่</a> ณ 7 ต.ค. 2569 เวลา 10.00 น. หน้านี้จัดทำขึ้นเองเพื่อแสดงข้อมูลบนแผนที่ ไม่ใช่ประกาศทางการของไปรษณีย์ไทย กรุณาตรวจสอบข้อมูลล่าสุดจากช่องทางทางการ ตำแหน่งอำเภอจับคู่จากชื่อที่ทำการ/คอลัมน์อำเภอ-เขต และรหัสไปรษณีย์ ส่วนสีเป็นการประเมินจากข้อความในเอกสาร</div>`;
 }
 function select(i,zoom){
   if(sel>=0){dEl[sel].classList.remove('sel');mEl[sel].classList.remove('sel')}
@@ -280,7 +283,7 @@ function select(i,zoom){
     ${r.dt?`<div class="lbl">หมู่ที่ / รายละเอียดพื้นที่</div><div class="txt">${esc(r.dt)}</div>`:''}
     ${others.length?`<div class="note">ที่ทำการนี้ครอบคลุมหลายอำเภอ/เขต ข้อความข้างบนเป็นข้อมูลรวม · ดูเพิ่ม: ${others.map(o=>`<a role="button" tabindex="0" data-go="${o}">${esc(DATA.dist[o].n)}</a>`).join(', ')}</div>`:''}
     <div class="note">ลำดับในเอกสารต้นฉบับ: ${r.no}</div></div>`});
-  h+=`<div class="foot">คอลัมน์สีประเมินจากข้อความ “ทั้งตำบล/ทั้งหมด/เต็มพื้นที่” ในเอกสาร ไม่ใช่ข้อมูลระดับน้ำ</div>`;
+  h+=`<div class="foot">ที่มา: <a class="src" href="https://www.facebook.com/thailandpost.co.th/posts/pfbid0GEbTCNqeLDXfKwJDbDovmh1Xxyp59xiGMBpRotpsTkP861s54fFouaTa6pCqRcQzl" target="_blank" rel="noopener noreferrer">ไปรษณีย์ไทย</a> · คอลัมน์สีประเมินจากข้อความ “ทั้งตำบล/ทั้งหมด/เต็มพื้นที่” ในเอกสาร ไม่ใช่ข้อมูลระดับน้ำ</div>`;
   detail.innerHTML=h;detail.scrollTop=0;
   $('#cl').onclick=()=>deselect();
   detail.querySelectorAll('[data-go]').forEach(a=>{a.onclick=()=>select(+a.dataset.go,true);a.onkeydown=e=>{if(e.key==='Enter')select(+a.dataset.go,true)}});
