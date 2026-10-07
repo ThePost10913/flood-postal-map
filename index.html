@@ -99,29 +99,59 @@ section.detail{border-left:1px solid var(--line);padding:0}
 .clist li{margin:3px 0}
 .mobile-close{display:none}
 @media (max-width:1100px){main{grid-template-columns:260px 1fr 340px}}
+.sheethead,.closedbtn,.fab,.mobhead{display:none}
+.legend summary{cursor:pointer;font-weight:600;list-style:none}
+.legend summary::-webkit-details-marker{display:none}
+.legend[open] summary{margin-bottom:4px}
 @media (max-width:820px){
-  body{overflow:auto}
-  main{display:flex;flex-direction:column;overflow:visible}
-  .mapwrap{height:62vh;flex:none;order:1}
-  aside{order:2;border-right:0;max-height:60vh;overflow:auto}
-  section.detail{order:3;border-left:0}
-  header{padding:10px 14px}
-  .stats{gap:14px}
+  html,body{height:100%}
+  body{height:100vh;height:100dvh;overflow:hidden}
+  header{padding:8px 12px;gap:2px 12px;align-items:center}
+  h1{font-size:1rem}
+  .desc{display:none}
+  .sub{font-size:.75rem}
+  .stats{gap:4px 12px}
+  .stat{display:flex;gap:4px;align-items:baseline}
+  .stat b{font-size:.95rem}.stat span{font-size:.72rem}
+  main{display:block;position:relative;flex:1;min-height:0}
+  .mapwrap{position:absolute;inset:0}
+  .ctrl{top:8px;right:8px}.ctrl button{width:44px;height:44px;font-size:1.3rem}
+  .legend{left:8px;top:8px;bottom:auto;font-size:.78rem;max-width:230px;padding:7px 10px}
+  .fab{display:flex;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));padding:12px 22px;border-radius:99px;border:0;background:var(--ink);color:var(--bg);font:inherit;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer;z-index:4;gap:8px;align-items:center}
+  body.sheet .fab{display:none}
+  aside,section.detail{position:fixed;left:0;right:0;bottom:0;z-index:30;border:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.22);transform:translateY(110%);transition:transform .25s ease;padding-bottom:env(safe-area-inset-bottom,0px)}
+  aside{height:72vh;height:72dvh}
+  section.detail{height:52vh;height:52dvh}
+  aside.show,section.detail.show{transform:none}
+  .sheethead,.mobhead{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:3}
+  .sheethead button,.mobhead button,.dh .x{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;border-radius:8px;font-size:1.2rem}
+  .dh .x{top:6px;right:6px}
+  .closedbtn{display:block;width:100%;text-align:left;padding:11px 16px;border:0;border-bottom:1px solid var(--line);background:var(--chip);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+  .search input{font-size:16px;padding:11px 12px}
+  .pv>button{padding:13px 16px}
+  .dist{padding:11px 16px 11px 24px;font-size:1rem}
+  .dh{padding:14px 56px 10px 16px}
+  .card,.closedbox{padding-left:16px;padding-right:16px}.closedbox{margin-left:12px;margin-right:12px}
+  .foot,.clist{padding-left:16px;padding-right:16px}
+  .tip{display:none!important}
 }
+@media (prefers-reduced-motion:reduce){aside,section.detail{transition:none}}
 </style>
 </head>
 <body>
 <header>
   <div>
     <h1>พื้นที่ประสบอุทกภัยที่ไปรษณีย์นำจ่ายไม่ได้</h1>
-    <div class="sub">ข้อมูล ณ วันที่ 7 ตุลาคม พ.ศ. 2569 เวลา 10.00 น. · เรียงตามรหัสไปรษณีย์ · คลิกอำเภอ/เขตบนแผนที่เพื่อดูรายละเอียด</div>
+    <div class="sub desc">ข้อมูล ณ วันที่ 7 ตุลาคม พ.ศ. 2569 เวลา 10.00 น. · เรียงตามรหัสไปรษณีย์ · คลิกอำเภอ/เขตบนแผนที่เพื่อดูรายละเอียด</div>
     <div class="sub">ที่มาข้อมูล: <a class="src" href="https://www.facebook.com/thailandpost.co.th/posts/pfbid0GEbTCNqeLDXfKwJDbDovmh1Xxyp59xiGMBpRotpsTkP861s54fFouaTa6pCqRcQzl" target="_blank" rel="noopener noreferrer">บริษัท ไปรษณีย์ไทย จำกัด (ประกาศทาง Facebook 7 ต.ค. 2569)</a></div>
   </div>
   <div class="stats" id="stats"></div>
 </header>
 <main>
-  <aside>
+  <aside id="aside">
+    <div class="sheethead"><b>รายการอำเภอ/เขต</b><button id="lclose" aria-label="ปิดรายการ">✕</button></div>
     <div class="search"><input id="q" type="search" placeholder="ค้นหาจังหวัด อำเภอ ตำบล หมู่บ้าน ที่ทำการ…" aria-label="ค้นหา"></div>
+    <button class="closedbtn" id="closedbtn">ที่ทำการที่ปิดทำการ (6) · ที่มาข้อมูล</button>
     <div class="list" id="list"></div>
   </aside>
   <div class="mapwrap" id="mapwrap">
@@ -132,11 +162,12 @@ section.detail{border-left:1px solid var(--line);padding:0}
       <button id="zaff" aria-label="ซูมไปยังพื้นที่ประสบภัย" title="ซูมไปยังพื้นที่ประสบภัย">◎</button>
       <button id="zall" aria-label="ดูทั้งประเทศ" title="ดูทั้งประเทศ">⌂</button>
     </div>
-    <div class="legend">
+    <details class="legend" id="legend" open><summary>คำอธิบายสี</summary>
       <div><i style="background:var(--full)"></i>มีข้อความระบุว่าครอบคลุมทั้งตำบล/ทั้งพื้นที่</div>
       <div><i style="background:var(--partial)"></i>เฉพาะบางส่วน/บางหมู่บ้าน/บางซอย</div>
       <div><i style="border:2px dashed var(--closed)"></i>อำเภอของที่ทำการที่ปิดทำการ</div>
-    </div>
+    </details>
+    <button class="fab" id="fab">☰ รายการอำเภอ/เขต</button>
     <div class="tip" id="tip"></div>
   </div>
   <section class="detail" id="detail"></section>
@@ -147,12 +178,13 @@ const NS="http://www.w3.org/2000/svg";
 const $=s=>document.querySelector(s);
 const svg=$('#map'), wrap=$('#mapwrap'), tip=$('#tip');
 const [VX,VY,VW,VH]=DATA.vb;
+const isM=()=>matchMedia('(max-width:820px)').matches;
 let view={x:VX,y:VY,w:VW,h:VH}, sel=-1;
 const el=(n,a={},p)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
 
 /* ---------- stats ---------- */
 const provSet=new Set(DATA.dist.map(d=>d.p));
-$('#stats').innerHTML=[[DATA.recs.length,'ที่ทำการที่นำจ่ายไม่ได้บางส่วน'],[DATA.dist.length,'อำเภอ/เขตบนแผนที่'],[provSet.size,'จังหวัด'],[DATA.closed.length,'ที่ทำการปิดทำการ']]
+$('#stats').innerHTML=[[DATA.recs.length,'ที่ทำการ'],[DATA.dist.length,'อำเภอ/เขต'],[provSet.size,'จังหวัด'],[DATA.closed.length,'ปิดทำการ']]
   .map(([a,b])=>`<div class="stat"><b>${a}</b><span>${b}</span></div>`).join('');
 
 /* ---------- map layers ---------- */
@@ -177,7 +209,7 @@ function hideTip(){tip.style.display='none'}
 function applyView(){
   svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);
   const r=svg.getBoundingClientRect(); const ppu=Math.min(r.width/view.w,r.height/view.h)||1; // px per unit
-  mEl.forEach(m=>m.setAttribute('r',(sel>=0&&m===mEl[sel]?7:5)/ppu));
+  const rb=isM()?8:5;mEl.forEach(m=>m.setAttribute('r',(sel>=0&&m===mEl[sel]?rb+2:rb)/ppu));
   plEl.forEach(t=>{t.style.fontSize=(12/ppu)+'px';t.style.strokeWidth=(3/ppu)+'px';t.style.display=ppu>9?'none':''});
   const show=ppu>=5;
   dlEl.forEach((t,i)=>{t.style.display=show?'':'none';t.style.fontSize=(11.5/ppu)+'px';t.style.strokeWidth=(3/ppu)+'px'});
@@ -189,12 +221,12 @@ function fit(){ // keep aspect to element
   if(view.w/view.h<ar){view.w=view.h*ar}else{view.h=view.w/ar}
   view.x=cx-view.w/2; view.y=cy-view.h/2;
 }
-function setBox(x0,y0,x1,y1,pad=.12,anim=true){
+function setBox(x0,y0,x1,y1,pad=.12,anim=true,inset=0){
   const bw=Math.max(x1-x0,12), bh=Math.max(y1-y0,12);
-  const r=svg.getBoundingClientRect(), ar=r.width/r.height;
+  const r=svg.getBoundingClientRect(), vh=Math.max(r.height-inset,120), ar=r.width/vh;
   let w=bw*(1+pad*2), h=bh*(1+pad*2);
   if(w/h<ar)w=h*ar; else h=w/ar;
-  const t={x:(x0+x1)/2-w/2,y:(y0+y1)/2-h/2,w,h};
+  const t={x:(x0+x1)/2-w/2,y:(y0+y1)/2-h/2,w,h:h*r.height/vh};
   if(!anim){view=t;applyView();return}
   const s={...view};let k=0;const f=()=>{k+=.09;const e=1-Math.pow(1-Math.min(k,1),3);
     view={x:s.x+(t.x-s.x)*e,y:s.y+(t.y-s.y)*e,w:s.w+(t.w-s.w)*e,h:s.h+(t.h-s.h)*e};applyView();if(k<1)requestAnimationFrame(f)};f();
@@ -256,9 +288,9 @@ $('#q').addEventListener('input',e=>renderList(e.target.value));
 /* ---------- detail ---------- */
 const detail=$('#detail');
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-function renderEmpty(){
+var renderEmpty=function(){
   const cl=DATA.closed.map(c=>`<li>${esc(c.office)} <span class="also">(${esc(c.p)}${c.note?' · '+esc(c.note):''})</span></li>`).join('');
-  detail.innerHTML=`<div class="empty"><h2>เลือกอำเภอหรือเขตบนแผนที่</h2>
+  detail.innerHTML=`<div class="mobhead"><b>ที่ปิดทำการ / ที่มาข้อมูล</b><button id="ec" aria-label="ปิด">✕</button></div><div class="empty"><h2>เลือกอำเภอหรือเขตบนแผนที่</h2>
   จุดสีบนแผนที่คืออำเภอ/เขตที่มีที่ทำการแจ้งว่านำจ่ายไม่ได้ ซูมเข้าเพื่อเห็นรูปร่างและชื่ออำเภอ ลากเพื่อเลื่อนแผนที่ หรือเลือกจากรายการด้านซ้าย</div>
   <div class="closedbox"><b>ที่ทำการ/จุดให้บริการที่ปิดทำการ (${DATA.closed.length})</b></div>
   <ul class="clist">${cl}</ul>
@@ -268,10 +300,12 @@ function select(i,zoom){
   if(sel>=0){dEl[sel].classList.remove('sel');mEl[sel].classList.remove('sel')}
   sel=i;const d=DATA.dist[i];
   dEl[i].classList.add('sel');mEl[i].classList.add('sel');gD.appendChild(dEl[i]);
-  if(zoom)setBox(...d.bb,.9);
+  const mob=isM();
+  if(mob){aside.classList.remove('show');detail.classList.add('show');document.body.classList.add('sheet')}
+  if(zoom)setBox(...d.bb,.9,true,mob?innerHeight*.52:0);
   document.querySelectorAll('.dist').forEach(b=>b.classList.toggle('sel',+b.dataset.i===i));
   const pb=[...document.querySelectorAll('.pv')].find(p=>p.querySelector('.dist[data-i="'+i+'"]'));
-  if(pb){pb.classList.add('open');const bt=pb.querySelector('button');bt&&bt.setAttribute('aria-expanded','true');pb.querySelector('.dist[data-i="'+i+'"]').scrollIntoView({block:'nearest'})}
+  if(pb){pb.classList.add('open');const bt=pb.querySelector('button');bt&&bt.setAttribute('aria-expanded','true');if(!isM())pb.querySelector('.dist[data-i="'+i+'"]').scrollIntoView({block:'nearest'})}
   let h=`<div class="dh"><button class="x" id="cl" aria-label="ปิดรายละเอียด">✕</button><div class="pvn">${esc(d.p)}</div><h2>${esc(d.n)}</h2>
    <div class="sub">${d.r.length} ที่ทำการที่แจ้งพื้นที่นำจ่ายไม่ได้${d.c.length?' · '+d.c.length+' ที่ทำการปิดทำการ':''}</div></div>`;
   d.c.forEach(j=>{const c=DATA.closed[j];h+=`<div class="closedbox"><span class="badge closed">ปิดทำการ</span> ${esc(c.office)}${c.note?'<div class="note">'+esc(c.note)+'</div>':''}</div>`});
@@ -287,11 +321,19 @@ function select(i,zoom){
   detail.innerHTML=h;detail.scrollTop=0;
   $('#cl').onclick=()=>deselect();
   detail.querySelectorAll('[data-go]').forEach(a=>{a.onclick=()=>select(+a.dataset.go,true);a.onkeydown=e=>{if(e.key==='Enter')select(+a.dataset.go,true)}});
-  if(window.innerWidth<=820)detail.scrollIntoView({behavior:'smooth',block:'start'});
+  
 }
-function deselect(){if(sel>=0){dEl[sel].classList.remove('sel');mEl[sel].classList.remove('sel')}sel=-1;document.querySelectorAll('.dist.sel').forEach(b=>b.classList.remove('sel'));renderEmpty();applyView()}
+function deselect(){if(sel>=0){dEl[sel].classList.remove('sel');mEl[sel].classList.remove('sel')}sel=-1;document.querySelectorAll('.dist.sel').forEach(b=>b.classList.remove('sel'));renderEmpty();closeDetail();applyView()}
+function closeDetail(){detail.classList.remove('show');document.body.classList.remove('sheet')}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sel>=0)deselect()});
 
+const aside=$('#aside');
+function bindEmpty(){const ec=$('#ec');if(ec)ec.onclick=closeDetail}
+const _re=renderEmpty;renderEmpty=function(){_re();bindEmpty()};
+$('#fab').onclick=()=>{aside.classList.add('show')};
+$('#lclose').onclick=()=>aside.classList.remove('show');
+$('#closedbtn').onclick=()=>{aside.classList.remove('show');renderEmpty();detail.classList.add('show');document.body.classList.add('sheet')};
+const lg=$('#legend');if(isM())lg.open=false;
 renderList();renderEmpty();
 requestAnimationFrame(()=>{fit();setBox(...affBox(),.05,false)});
 </script>
